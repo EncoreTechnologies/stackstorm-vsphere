@@ -49,6 +49,9 @@ coverage.xml
 *.mo
 *.pot
 
+# ignore mac DS file
+.DS_Store
+
 # Django stuff:
 *.log
 local_settings.py
