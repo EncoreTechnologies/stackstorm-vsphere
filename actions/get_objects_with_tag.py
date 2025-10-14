@@ -36,8 +36,24 @@ class GetObjectsWithTag(BaseAction):
         if kwargs.get("tag_id"):
             return self.tagging.tag_association_list_attached_objects(kwargs.get("tag_id"))
         elif kwargs.get("category_name") and kwargs.get("tag_name"):
-            category = self.tagging.category_find_by_name(kwargs.get("category_name"))
-            tag = self.tagging.tag_find_by_name(kwargs.get("tag_name"), category["id"])
+            category_name = kwargs.get("category_name")
+            tag_name = kwargs.get("tag_name")
+
+            category = self.tagging.category_find_by_name(category_name)
+            if category is None:
+                raise ValueError(
+                    f"Tag category '{category_name}' not found in vSphere. "
+                    f"Please verify the category exists or create it using "
+                    f"vsphere.tag_category_create"
+                )
+
+            tag = self.tagging.tag_find_by_name(tag_name, category["id"])
+            if tag is None:
+                raise ValueError(
+                    f"Tag '{tag_name}' not found in category '{category_name}'. "
+                    f"Please verify the tag exists or create it using vsphere.tag_create"
+                )
+
             return self.tagging.tag_association_list_attached_objects(tag["id"])
         else:
             raise ValueError("Tag ID or Category name and Tag name are required!")
